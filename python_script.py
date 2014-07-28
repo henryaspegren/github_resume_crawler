@@ -2,6 +2,7 @@ import requests
 import json
 import csv
 import os
+import unicodedata
 
 class User ():
   def __init__ (self, name, username, project, commits,
@@ -14,17 +15,18 @@ class User ():
 
     # CSV module only takes ASCII, no unicode
     if company is not None:
-      self.company = company.encode('ascii', 'ignore')
+      self.company = unicodedata.normalize('NFKD',company).encode('ascii', 'ignore')
     if location is not None:
-      self.location = location.encode('ascii', 'ignore')
+      self.location = unicodedata.normalize('NFKD',location).encode('ascii', 'ignore')
     if email is not None:
-      self.email = email.encode('ascii', 'ignore')
+      self.email = unicodedata.normalize('NFKD', email).encode('ascii', 'ignore')
     if blog is not None:
-      self.blog = blog.encode('ascii', 'ignore')
+      self.blog = unicodedata.normalize('NFKD', blog).encode('ascii', 'ignore')
 
     # Gauranteed to be != None
-    self.name = name.encode('ascii', 'ignore')
+    self.name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore')
 
+    # Gauarnteed to be ASCII since user inputs these
     self.project = project
     self.commits = commits
     self.username = username
@@ -85,8 +87,13 @@ def repository_crawl(owner, repository, project):
       userwriter.writerow(user.to_csv())
 
 
+
+
 # print (os.environ.get('GIT_USERNAME'), os.environ.get('GIT_PASSWORD'))
 #get_contributors("angular","angular.js")
-repository_crawl(owner="angular", repository="angular.js", project="Angular JS")
+#repository_crawl(owner="django", repository="django", project="Django")
+repository_crawl(owner="angular", repository="angular.js", project="Angular")
 #repository_crawl(owner="henryaspegren", repository="wateryourtree", project="Water Your Tree")
 #print get_user_information("shairez", "angular JS", 12)
+
+
